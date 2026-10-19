@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07040f">
+  <title>Will you go to prom with me?</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💗</text></svg>">
+  <style>
+    :root { color-scheme: dark; }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      margin: 0;
+      color: #ffe9f3;
+      background: #07040f;
+      font-family: Palatino, "Palatino Linotype", Georgia, serif;
+    }
+
+    [hidden] { display: none !important; }
+
+    .night {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse at 82% 0%, rgba(90, 30, 60, 0.55), transparent 46%),
+        radial-gradient(ellipse at 8% 100%, rgba(80, 16, 50, 0.4), transparent 42%),
+        linear-gradient(#07040f, #140710 55%, #1b0a16);
+    }
+
+    .moon {
+      position: absolute;
+      top: 6vh;
+      right: 8vw;
+      width: clamp(42px, 12vw, 68px);
+      height: clamp(42px, 12vw, 68px);
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #fff8ee, #f6d7b0 55%, #e7bcc8);
+      box-shadow: 0 0 28px 8px rgba(255, 214, 186, 0.35);
+    }
+
+    .stars {
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(1px 1px at 20px 30px, #fff, transparent),
+        radial-gradient(1.5px 1.5px at 90px 140px, #fff, transparent),
+        radial-gradient(1px 1px at 150px 50px, rgba(255, 255, 255, 0.85), transparent),
+        radial-gradient(1px 1px at 200px 190px, #fff, transparent),
+        radial-gradient(1.5px 1.5px at 40px 210px, #fff, transparent),
+        radial-gradient(1px 1px at 240px 80px, #fff, transparent),
+        radial-gradient(1px 1px at 120px 250px, rgba(255, 255, 255, 0.8), transparent),
+        radial-gradient(2px 2px at 270px 24px, #fff, transparent);
+      background-size: 300px 280px;
+      animation: twinkle 3.4s ease-in-out infinite alternate;
+    }
+
+    .hearts span {
+      position: absolute;
+      bottom: -12vh;
+      left: var(--x);
+      font-size: var(--s);
+      color: #ff6b9d;
+      opacity: 0.28;
+      animation: float-up var(--d) linear infinite;
+      animation-delay: var(--t);
+    }
+
+    .hearts span:nth-child(even) { color: #ff9ec4; opacity: 0.2; }
+
+    body.party .hearts span {
+      opacity: 0.8;
+      filter: drop-shadow(0 0 6px #ff4d8d);
+    }
+
+    main {
+      position: relative;
+      z-index: 1;
+    }
+
+    section {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      text-align: center;
+      padding: clamp(4.5rem, 10vh, 8rem) clamp(1.5rem, 8vw, 8rem);
+    }
+
+    h1 {
+      margin: 0;
+      max-width: min(14em, 92vw);
+      font-weight: 500;
+      font-size: clamp(2.2rem, 5.4vw, 6rem);
+      line-height: 1.25;
+      text-wrap: balance;
+    }
+
+    button {
+      font: inherit;
+      cursor: pointer;
+      border: 0;
+      border-radius: 999px;
+      user-select: none;
+    }
+
+    button:focus-visible {
+      outline: 2px solid #ffd0e4;
+      outline-offset: 3px;
+    }
+
+    #yes {
+      background: #ff4d8d;
+      color: #fff;
+      font-weight: 700;
+      box-shadow: 0 0 22px rgba(255, 77, 141, 0.7);
+    }
+
+    #yes:hover { background: #ff6ba3; }
+
+    #proposal {
+      height: 100dvh;
+      min-height: 100dvh;
+      max-height: 100dvh;
+      overflow: hidden;
+      padding: clamp(1rem, 4vh, 2.25rem) clamp(1rem, 4vw, 3rem);
+    }
+
+    #proposal h1 {
+      font-size: clamp(1.7rem, 3.5vw, 3.2rem);
+      line-height: 1.2;
+      max-width: min(16em, 92vw);
+    }
+
+    #proposal .choices {
+      margin-top: clamp(1.25rem, 4vh, 2.4rem);
+      gap: clamp(0.8rem, 2vw, 1.6rem);
+    }
+
+    #proposal #yes,
+    #proposal #no {
+      font-size: clamp(1rem, 1.45vw, 1.35rem);
+    }
+
+    .choices {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(1.2rem, 3vw, 3rem);
+      margin-top: clamp(2.8rem, 7vh, 5rem);
+    }
+
+    #yes, #no {
+      letter-spacing: 0.08em;
+      font-size: clamp(1.2rem, 2vw, 1.85rem);
+    }
+
+    #yes {
+      position: relative;
+      z-index: 1;
+      padding: 0.85em 2.1em;
+      transform: scale(var(--grow, 1));
+      transition: transform 0.25s ease;
+    }
+
+    #yes:active { transform: scale(calc(var(--grow, 1) * 0.96)); }
+
+    #no {
+      position: relative;
+      padding: 0.75em 1.7em;
+      color: #ffd6e8;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 182, 210, 0.55);
+    }
+
+    #no:hover:not(.bolting) { background: rgba(255, 77, 141, 0.16); }
+
+    #no:active:not(.bolting) { transform: scale(0.96); }
+
+    #no.bolting {
+      z-index: 5;
+      margin: 0;
+      pointer-events: none;
+      animation: flee 3.6s linear forwards;
+    }
+
+    #no.bolting::before,
+    #no.bolting::after {
+      content: "";
+      position: absolute;
+      bottom: -26px;
+      width: 9px;
+      height: 20px;
+      background: #ffe4f1;
+      border-bottom: 7px solid #ff4d8d;
+      border-radius: 5px 5px 3px 3px;
+      transform-origin: top center;
+      animation: step 0.18s infinite alternate;
+    }
+
+    #no.bolting::before { left: 18%; }
+    #no.bolting::after { right: 18%; animation-delay: -0.18s; }
+
+    .stage {
+      --w: min(400px, 68vw, 42vh);
+      position: relative;
+      width: var(--w);
+      aspect-ratio: 32 / 29.6;
+      filter: drop-shadow(0 0 16px rgba(255, 77, 141, 0.95));
+      animation: pop 0.7s cubic-bezier(0.2, 1.25, 0.35, 1);
+    }
+
+    .wing {
+      position: absolute;
+      top: 0;
+      width: calc(50% + 1px);
+      height: 100%;
+      overflow: hidden;
+      z-index: 2;
+    }
+
+    .wing.left { left: 0; animation: apart-left 0.95s 0.72s ease-in forwards; }
+    .wing.right { right: 0; animation: apart-right 0.95s 0.72s ease-in forwards; }
+
+    .wing svg {
+      position: absolute;
+      top: 0;
+      width: var(--w);
+      height: 100%;
+    }
+
+    .wing.left svg { left: 0; }
+    .wing.right svg { right: 0; }
+
+    .portrait {
+      position: absolute;
+      z-index: 1;
+      left: 50%;
+      top: 50%;
+      width: 74%;
+      height: 74%;
+      transform: translate(-50%, -50%);
+      filter: drop-shadow(0 0 14px rgba(255, 140, 190, 0.95));
+    }
+
+    #finale {
+      height: 100dvh;
+      min-height: 0;
+      max-height: 100dvh;
+      overflow: hidden;
+      gap: clamp(0.8rem, 2.5vh, 1.6rem);
+      padding: clamp(0.75rem, 3vh, 1.75rem);
+    }
+
+    #finale h1 {
+      max-width: 14em;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      font-weight: 800;
+      font-size: clamp(1.25rem, 2.6vw, 2.35rem);
+      color: #ffe4f1;
+      text-shadow: 0 0 16px #ff4d8d, 0 0 34px #ff4d8d;
+      opacity: 0;
+      animation: banner 0.55s 1.3s ease forwards;
+    }
+
+    #finale h1:focus { outline: none; }
+
+    .burst {
+      position: fixed;
+      top: -6vh;
+      z-index: 3;
+      pointer-events: none;
+      animation: fall linear forwards;
+    }
+
+    .burst.bit {
+      width: 8px;
+      height: 12px;
+      border-radius: 2px;
+    }
+
+    .burst.heart {
+      font-size: 1.2rem;
+      color: #ff7eae;
+      text-shadow: 0 0 8px #ff4d8d;
+    }
+
+    .defs { position: absolute; width: 0; height: 0; }
+
+    @keyframes twinkle { from { opacity: 0.55; } to { opacity: 1; } }
+
+    @keyframes float-up { to { transform: translateY(-120vh); } }
+
+    @keyframes step {
+      from { transform: rotate(32deg); }
+      to { transform: rotate(-28deg); }
+    }
+
+    @keyframes flee {
+      0% { transform: translate(0, 0) rotate(0); }
+      10% { transform: translate(-28px, 8px) rotate(-8deg); }
+      28% { transform: translate(8vw, -6px) rotate(5deg); }
+      52% { transform: translate(24vw, 6px) rotate(-4deg); }
+      76% { transform: translate(48vw, -4px) rotate(7deg); }
+      100% { transform: translate(115vw, 10px) rotate(12deg); }
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0.15); }
+      68% { transform: scale(1.08); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes apart-left { to { transform: translateX(-80%) rotate(-12deg); } }
+    @keyframes apart-right { to { transform: translateX(80%) rotate(12deg); } }
+
+    @keyframes banner {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    @keyframes fall {
+      to { transform: translateY(110vh) rotate(640deg); opacity: 0; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .stars, .hearts span, .stage { animation: none; }
+      #finale h1 { animation: none; opacity: 1; transform: none; }
+      .wing.left, .wing.right { animation: none; }
+      .wing.left { transform: translateX(-80%) rotate(-12deg); }
+      .wing.right { transform: translateX(80%) rotate(12deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="night" aria-hidden="true">
+    <div class="moon"></div>
+    <div class="stars"></div>
+    <div class="hearts">
+      <span style="--x:6%;--s:.75rem;--d:14s;--t:-1s">♥</span>
+      <span style="--x:16%;--s:1.1rem;--d:18s;--t:-7s">♥</span>
+      <span style="--x:28%;--s:.65rem;--d:12s;--t:-4s">♥</span>
+      <span style="--x:42%;--s:1.25rem;--d:16s;--t:-11s">♥</span>
+      <span style="--x:55%;--s:.85rem;--d:15s;--t:-3s">♥</span>
+      <span style="--x:68%;--s:1rem;--d:19s;--t:-9s">♥</span>
+      <span style="--x:80%;--s:.7rem;--d:13s;--t:-6s">♥</span>
+      <span style="--x:90%;--s:1.15rem;--d:17s;--t:-13s">♥</span>
+    </div>
+  </div>
+
+  <svg class="defs" aria-hidden="true">
+    <defs>
+      <path id="heart" fill="#ff4d8d" d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.5,11.9,16,21.2c6.1-9.3,16-12.1,16-21.2C32,3.8,28.2,0,23.6,0z"/>
+    </defs>
+  </svg>
+
+  <main>
+    <section id="proposal">
+      <h1 id="question" aria-live="polite">Will you go to prom with me? ❤️</h1>
+      <div class="choices">
+        <button id="yes" type="button">YES</button>
+        <button id="no" type="button">NO</button>
+      </div>
+    </section>
+
+    <section id="finale" hidden>
+      <div class="stage">
+        <div class="wing left">
+          <svg viewBox="0 0 32 29.6" aria-hidden="true"><use href="#heart"/></svg>
+        </div>
+        <div class="wing right">
+          <svg viewBox="0 0 32 29.6" aria-hidden="true"><use href="#heart"/></svg>
+        </div>
+        <svg class="portrait" viewBox="0 0 32 29.6" role="img" aria-label="My girlfriend">
+          <defs>
+            <clipPath id="cut">
+              <use href="#heart"/>
+            </clipPath>
+          </defs>
+          <use href="#heart"/>
+          <image id="photo" href="girlfriend.jpg" width="32" height="29.6" preserveAspectRatio="xMidYMid slice" clip-path="url(#cut)"/>
+        </svg>
+      </div>
+      <h1 tabindex="-1">CONGRATS ON MAKING THE BEST CHOICE OF UR LIFE ❤️</h1>
+    </section>
+  </main>
+
+  <script>
+    const noLines = [
+      "Think again... 🥺",
+      "That's a bit rude... 😭",
+      "Come onnn 😔 My heart can't take this...",
+      "You're really gonna break my heart 💔",
+      "BAHAHA FUCK U BITCH 😤"
+    ];
+
+    const proposal = document.querySelector("#proposal");
+    const finale = document.querySelector("#finale");
+    const question = document.querySelector("#question");
+    const yesBtn = document.querySelector("#yes");
+    const noBtn = document.querySelector("#no");
+    const photo = document.querySelector("#photo");
+
+    let noClicks = 0;
+    let celebrated = false;
+
+    noBtn.addEventListener("click", () => {
+      if (noBtn.classList.contains("bolting")) return;
+      question.textContent = noLines[noClicks];
+      noClicks += 1;
+      yesBtn.style.setProperty("--grow", 1 + noClicks * 0.1);
+      if (noClicks < noLines.length) return;
+      if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        noBtn.remove();
+        return;
+      }
+      const rect = noBtn.getBoundingClientRect();
+      noBtn.style.position = "fixed";
+      noBtn.style.left = rect.left + "px";
+      noBtn.style.top = rect.top + "px";
+      noBtn.style.width = rect.width + "px";
+      noBtn.classList.add("bolting");
+    });
+
+    noBtn.addEventListener("animationend", (event) => {
+      if (event.animationName === "flee") noBtn.remove();
+    });
+
+    yesBtn.addEventListener("click", () => {
+      if (celebrated) return;
+      celebrated = true;
+      noBtn.remove();
+      proposal.hidden = true;
+      finale.hidden = false;
+      document.body.classList.add("party");
+      finale.querySelector("h1").focus();
+
+      const colors = ["#ff4d8d", "#ffd1e6", "#fff4f8", "#e7b6ff", "#ff8fb8"];
+      for (let i = 0; i < 40; i++) {
+        const piece = document.createElement("span");
+        const heart = i % 4 === 0;
+        piece.className = heart ? "burst heart" : "burst bit";
+        piece.style.left = Math.random() * 100 + "vw";
+        piece.style.animationDuration = (2 + Math.random() * 1.6) + "s";
+        piece.style.animationDelay = Math.random() * 0.35 + "s";
+        if (heart) piece.textContent = "♥";
+        else piece.style.background = colors[i % colors.length];
+        piece.addEventListener("animationend", () => piece.remove());
+        document.body.append(piece);
+      }
+
+      try {
+        const sound = new Audio("vine-boom.mp3");
+        sound.play().catch(() => {});
+      } catch {}
+    });
+
+    const backup = new Image();
+    backup.onerror = () => photo.remove();
+    backup.src = "girlfriend.jpg";
+  </script>
+</body>
+</html>
